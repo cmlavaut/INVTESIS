@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+  <h3> Registrarse</h3>
+  <br/>
+  <form method="POST">  <!--con POST pongo los datos al server-->
+    {{ form.hidden_tag() }}
+    {{ form.id.label (class="form-label") }}
+    {{ form.id(class="form-control" , id ="iduser") }}
+    {{ form.name.label (class="form-label") }}
+    {{ form.name(class="form-control", id= "idname") }}
+    {{ form.email.label (class="form-label") }}
+    {{ form.email(class="form-control" , id="idemail") }}
+    {{ form.userdb.label (class="form-label") }}
+    {{ form.userdb(class="form-control" , id= "iduserdb") }}
+    {{ form.passw.label (class="col-form-label") }}
+    {{ form.passw(class="form-control" , id= "idpassw") }}
+    <br/>
+
+    {{ form.submit(class="btn custom-btn", value = "Agregar", onclick="agregar()") }}
+  </form>  
+  <script src="../static/js/adduser.js"></script>
+{% endblock %}

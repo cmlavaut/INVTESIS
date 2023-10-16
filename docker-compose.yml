@@ -1,0 +1,54 @@
+version: "3"
+
+services:
+ web:
+   build: ./flask
+   container_name: flaskapp
+   volumes:
+     - ./flask/:/home/app
+     - ./database:/home/database
+     - /etc/localtime:/etc/localtime:ro
+   networks:
+     darkn:
+       ipv4_address: 172.19.0.3
+   ports:
+     - 5010:5010
+ 
+        
+ zigbee:
+   build: ./zigbee
+   container_name: zigbee-python
+   volumes:
+     - ./zigbee:/home/app
+     - ./database:/home/database
+     - /run/udev:/run/udev:ro
+     - /etc/localtime:/etc/localtime:ro
+   devices:
+     - /dev/ttyUSB0:/dev/ttyUSB0
+   networks:
+     darkn:
+       ipv4_address: 172.19.0.4
+
+
+ nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - '80:80' # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    networks:
+      darkn:
+        ipv4_address: 172.19.0.5
+    
+
+networks:
+  darkn:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.0/16 

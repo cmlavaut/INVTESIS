@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<h2> Bienvenido</h2>
+{% if user == 'Camila' %}
+  <script src="../static/js/user.js"></script>
+   
+{% else %}
+  <h3> Your login, please:</h3>
+  <br/>
+  <form method="POST">  <!--con POST pongo los datos al server-->
+    {{ form.hidden_tag() }}
+    {{ form.user.label (class="form-label") }}
+    {{ form.user(class="form-control", type="text") }}
+    {{ form.passw.label (class="form-label") }}
+    {{ form.passw(class="form-control", type="text") }}
+    <br/>
+
+    {{ form.submit(class="btn custom-btn") }}
+  </form>  
+
+{% endif %}
+{% endblock %}
