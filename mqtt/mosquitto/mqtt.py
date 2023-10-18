@@ -70,6 +70,8 @@ def main():
         dicc = {
             "Place" : [],
             "humedad_suelo" : [],
+            "humedad_deseada" : [],
+            "tiempo_regado" : [],
             "humedad_amb" : [],
             "temperatura" :[],
             "status_agua" : [],
