@@ -2,10 +2,22 @@ version: "3"
 
 
 services:
+ mosquitto-python:
+   build: ./mosquitto
+   container_name: mosquitto-python
+   networks: 
+    darkn:
+      ipv4_address: 172.19.0.10
+   volumes:
+     - ./mosquitto:/home
+     - ../database:/home/database
+     -  /etc/localtime:/etc/localtime:ro
+
+ 
  mosquitto:
    image: eclipse-mosquitto
-   container_name: mosquitto
-   networks: 
+   container_name: mosquitto-broker
+   networks:
     darkn:
       ipv4_address: 172.19.0.2
    volumes:
@@ -15,32 +27,6 @@ services:
    ports:
      - 1883:1883
      - 9001:9001
- 
- zigbee2mqtt:
-   container_name: zigbee2mqtt
-   image: koenkk/zigbee2mqtt
-   restart: unless-stopped
-   volumes:
-     - ./dockerzigbee/data:/app/data
-     - /run/udev:/run/udev:ro
-   ports:   
-     - 1881:8080
-   devices:
-     - /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A50285BI-if00-port0:/dev/ttyUSB0
-   networks:
-     darkn:
-       ipv4_address: 172.19.0.4
-
- web:
-   build: .
-   container_name: flaskaplic
-   networks:
-     darkn:
-       ipv4_address: 172.19.0.3
-   volumes: 
-     - .:/usr/home/app
-   ports:
-     - 5000:5000
 
 networks:
   darkn:
