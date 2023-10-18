@@ -1,4 +1,3 @@
-import serial
 import time
 import sys
 import os
@@ -8,7 +7,7 @@ import paho.mqtt.client as mqtt
 import json
 from threading import Thread
 
-path = '../home/database/mediciones.csv'
+path = '../database/mediciones.csv'
 broker = '172.19.0.2'
 topic = 'sensores/0'
 leercredenciales = open('credenciales.json',mode = 'r')
@@ -44,6 +43,7 @@ def guardar(valorA,tabla):
             pass            
         datos = [now_fecha, now_hora]
         datos = datos + valorA
+        print(tabla.shape[0])
         tabla.loc[tabla.shape[0]] = datos
         tabla.to_csv(path, index = False)
         print(tabla)
@@ -63,6 +63,7 @@ def on_message(client, userdata, message):
 
 def main():
     #Leeer datos anteriores
+    global tabla
     try:
         tabla = pd.read_csv(path)
     except:

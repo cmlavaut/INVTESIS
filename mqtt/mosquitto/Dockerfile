@@ -8,7 +8,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY ./inicio.py /home
 COPY ./credenciales.json /home
 COPY ./mqtt.py /home
-RUN mkdir /home/database
+RUN mkdir /database
 
 CMD [ "python3", "inicio.py" ]
 

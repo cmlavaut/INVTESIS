@@ -10,7 +10,7 @@ services:
       ipv4_address: 172.19.0.10
    volumes:
      - ./mosquitto:/home
-     - ../database:/home/database
+     - ../database:/database
      -  /etc/localtime:/etc/localtime:ro
 
  
