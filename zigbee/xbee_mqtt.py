@@ -38,6 +38,8 @@ def main():
         dicc = {
             "Place" : [],
             "humedad_suelo" : [],
+            "humedad_deseada" : [],
+            "tiempo_regado" : [],
             "humedad_amb" : [],
             "temperatura" :[],
             "status_agua" : [],
@@ -59,7 +61,7 @@ def main():
     sensor = sensor.decode()
     value= sensor.split()
     print(value)
-    if (len(value)==5):
+    if (len(value)==7):
         print("valores correctos")
         guardar(value,tabla)
     else:
