@@ -2,3 +2,4 @@
 .README.md
 /mqtt/data
 /mqtt/log
+/mariadb/data

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% import 'bootstrap/wtf.html' as wtf %}
 {% block content %}
 
 
@@ -7,8 +7,6 @@
   <br/>
   <form method="POST">  <!--con POST pongo los datos al server-->
     {{ form.hidden_tag() }}
-    {{ form.id.label (class="form-label") }}
-    {{ form.id(class="form-control" , id ="iduser") }}
     {{ form.name.label (class="form-label") }}
     {{ form.name(class="form-control", id= "idname") }}
     {{ form.email.label (class="form-label") }}

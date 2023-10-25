@@ -3,20 +3,17 @@ import plotly.utils
 #from velocimetro import crear_velocimetro
 import matplotlib.pyplot as plt
 from threading import Thread
-from flask_wtf import FlaskForm
+from webapp import create_app
 import numpy as np
 import pandas as pd
 from datetime import datetime
 #import time
 import json
 import os
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired
-from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
+
 
 path = '../database/mediciones.csv'
-dbusers = '../database/users.csv'
+
 varHumedad = [0.0,0.0, 0.0]
 varTemperatura = [0.0,0.0,0.0]
 varHumedadSuelo = [0.0,0.0,0.0]
@@ -26,22 +23,7 @@ tiempoRegado = [0,0,0]
 numPlanta = 0
 listoThread = [Thread(),Thread(), Thread()]
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = "my super secret key"
-
-class InicioForm(FlaskForm):
-    user = StringField ("Usuario:", validators= [DataRequired()])
-    passw = StringField ("Password:", validators= [DataRequired()])
-    submit= SubmitField("Aceptar")
-
-class UserForm(FlaskForm):
-    id = StringField ("Id", validators= [DataRequired()])
-    name = StringField ("Name", validators= [DataRequired()])
-    email = StringField ("Email", validators= [DataRequired()])
-    userdb = StringField ("User", validators= [DataRequired()])
-    passw= StringField ("Password", validators= [DataRequired()])
-    submit= SubmitField("Aceptar")
-
+app = create_app()
 
 def inicializarSensores(planta):
     global varHumedadSuelo, varHumedad, varTemperatura, agua, humedadMinima, tiempoRegado, numPlanta
@@ -66,30 +48,9 @@ def inicializarSensores(planta):
     }
     return context
 
-@app.route('/useragregado/<parametro>' ,methods=['GET'])
-def useragregado(parametro):
-    print(parametro)
-    try:
-        tablauser = pd.read_csv(dbusers)
-    except:
-        dicc = {
-            "id" : [],
-            "name" : [],
-            "email" : [],
-            "userdb" :[],
-            "passw" : [],
-           
-        }
-        tablauser = pd.DataFrame.from_dict(dicc)
-        tablauser.to_csv(dbusers,index= False)
+  
     
-    tabla = pd.DataFrame(tablauser)
-    tabla.iloc[-1] = parametro
-    tablauser.to_csv(dbusers, index= False) 
-    return render_template('success.html')     
-    
-    
-@app.route('/user/add', methods=['GET', 'POST']) 
+""" @app.route('/user/add', methods=['GET', 'POST']) 
 def clientadd():
     datos = {}
     form = UserForm()
@@ -106,7 +67,7 @@ def clientadd():
         form.email.data = ''
         form.userdb.data = ''
         form.passw.data = ''
-    return render_template ("add_client.html", **datos, form = form)
+    return render_template ("add_client.html", **datos, form = form) """
 
 
 @app.route('/graficar/<parametro>',methods=['GET'])
@@ -143,14 +104,6 @@ def historial():
     }
     return render_template("historial.html", **content)
 
-@app.route('/', methods=['GET', 'POST'])
-def login():
-    user = None
-    form = InicioForm()
-    if form.validate_on_submit(): #aqui estoy validando que tenga el texto lleno con algo
-        user= form.user.data
-        form.user.data = ''
-    return render_template("login.html", user= user, form= form)
 
 @app.route('/inicio')
 def main():
@@ -169,4 +122,4 @@ def pagenotfound(error):
 if __name__ == '__main__':
     app.register_error_handler(404, pagenotfound)
     #app.run(host="172.19.0.3",port=5010,debug=True)
-    app.run(host = '192.168.50.46', port=5010, debug=True)
+    app.run(port=5010, debug=True)
