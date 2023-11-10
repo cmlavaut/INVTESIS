@@ -1,0 +1,4 @@
+username,password,name,email
+kmi,pbkdf2:sha256:600000$52eY980JVMxS8vtB$9c721d0faed47dad92d78ef29414fb4aa4d0fc9ad7829a254aa727c31ef1c85a,Kmi,cmlavaut96@gmail.com
+annieop,pbkdf2:sha256:600000$QI9NUbaj3lyIHNpy$b4d5c5d46b8f511d995b27b94a68a8ddbeaa72692a55c4bedf35ffeec970cbb2,Annie,annieop@gmail.com
+victor47,pbkdf2:sha256:600000$HsmYsaPF0SSyYFwJ$daaa99dfd5846a13761b4e93a48e6ae2a4f83d8e5c83775900850b9090a23388,victor,victor@gmail.com

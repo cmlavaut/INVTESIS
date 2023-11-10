@@ -13,5 +13,5 @@ function historial(){
   window.location.href = "/historial";
 }
 function regresar(){
-  window.location.href = "/";
+  window.location.href = "/inicio";
 }

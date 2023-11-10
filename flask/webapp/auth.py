@@ -3,10 +3,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.fields import StringField, DateField,PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email
 from .models import UserData, UserModel
-from .bd import get_user, user_put
+from .database import get_user, user_put
 from flask_login import login_user, logout_user, login_required
 from flask_wtf import FlaskForm
-from .forms import LoginFormn, SignupForm
+from .forms import LoginForm, SignupForm
 
 
 auth = Blueprint('auth', __name__)
@@ -26,13 +26,14 @@ def login():
         if not user.empty:
             name = user['name'][0]
             email = user['email'][0]
+            id_plantacion = user['id_plantacion'][0]
             print(check_password_hash(user['password'][0], password))
             if check_password_hash(user['password'][0], password):
-                user_data = UserData(username,password,name,email)
+                user_data = UserData(username,password,name,email,id_plantacion)
                 user = UserModel(user_data)
                 flash('Bienvenido de nuevo')
                 login_user(user)
-                redirect(url_for('user'))
+                return redirect(url_for('main', parametro = id_plantacion))
             else:
                 flash('Please check your login details and try again')
 
@@ -49,7 +50,8 @@ def signup():
         'name': None,
         'email': None,
         'username': None,
-        'password': None
+        'password': None,
+        'id_plantacion': None
     }
     form = SignupForm()
 
@@ -58,11 +60,12 @@ def signup():
         email= form.email.data
         username = form.username.data
         password = form.password.data
+        id_plantacion = form.id_plantacion.data
         
         user = get_user(username)
         if user.empty:
             passsword_hash = generate_password_hash(password)
-            user_data= UserData(username,passsword_hash, name, email) 
+            user_data= UserData(username,passsword_hash, name, email, id_plantacion) 
             user_put(user_data)
             user = UserModel(user_data)
             login_user(user)
@@ -73,6 +76,7 @@ def signup():
             form.email.data = ''
             form.username.data = ''
             form.password.data = ''   
+            form.id_plantacion.data = ''
     return render_template ("signup.html", form = form,**dicc)
 
 

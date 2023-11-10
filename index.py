@@ -119,7 +119,7 @@ def sensor(planta):
 def pagenotfound(error):
     return render_template("404.html"), 404
 
-if __name__ == '__main__':
-    app.register_error_handler(404, pagenotfound)
-    #app.run(host="172.19.0.3",port=5010,debug=True)
-    app.run(port=5010, debug=True)
+# if __name__ == '__main__':
+#     app.register_error_handler(404, pagenotfound)
+#     #app.run(host="172.19.0.3",port=5010,debug=True)
+#     app.run(port=5010, debug=True)

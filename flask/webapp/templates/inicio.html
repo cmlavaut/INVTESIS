@@ -4,8 +4,22 @@
 
 {% block content %}
     <h2>Seleccione la maceta:</h2>
-    <!-- <div><button class="texto" onclick="index(0)" >Planta 00</button></div>
-    <div><button class="texto" onclick="index(1)" >Planta 01</button></div>-->
-    <div><button class="textobtn" onclick="index(2)" >Planta 02</button></div>
+    {% if  parametro == "1" %}      
+        <div><button class="textobtn" onclick="index(1)" >Planta 01</button></div>
+        <div><button class="textobtn" onclick="index(2)" >Planta 02</button></div>
+        <div><button class="textobtn" onclick="index(3)" >Planta 03</button></div>
+    {% elif parametro == "2" %}
+        <div><button class="textobtn" onclick="index(4)" >Planta 04</button></div>
+        <div><button class="textobtn" onclick="index(5)" >Planta 05</button></div>
+        <div><button class="textobtn" onclick="index(6)" >Planta 06</button></div>
+    {% else %}
+        <div><button class="textobtn" onclick="index(7)" >Planta 07</button></div>
+        <div><button class="textobtn" onclick="index(8)" >Planta 08</button></div>
+        <div><button class="textobtn" onclick="index(9)" >Planta 09</button></div>
+    {% endif %}
+
+
+
+
     <script src="../static/js/main.js"></script>
 {% endblock %}

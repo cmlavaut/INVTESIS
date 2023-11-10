@@ -4,7 +4,10 @@ html{
 }
 h1{
     color: black;
-    font-size: 60pt;
+    font-size: 60px;
+}
+body{
+    background-color:white;
 }
 h2{
     font-size: 40pt;

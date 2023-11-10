@@ -13,4 +13,5 @@ class SignupForm(FlaskForm):
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
     username = StringField('Nombre de usuario', validators=[DataRequired()])
     password = PasswordField('Password',validators=[DataRequired()])
+    id_plantacion = StringField('Identifique el ID de su plantacion', validators = [DataRequired()])
     submit = SubmitField('Aceptar')

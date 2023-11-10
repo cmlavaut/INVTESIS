@@ -1,0 +1,1 @@
+SELECT `esp_serial`, `sensor_HumS` ,`sensor_Hum`, `sensor_Temp`, `sensor_Ph`, `status_agua` FROM `end_device` WHERE id = "{}";

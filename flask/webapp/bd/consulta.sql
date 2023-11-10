@@ -1,0 +1,1 @@
+SELECT `nombre`, `email` ,`username`, `password`, `id_plantacion` FROM `clientes` WHERE `clientes`.`username`= "{}";

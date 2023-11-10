@@ -8,5 +8,5 @@ EXPOSE 1883
 EXPOSE 9001
 COPY . .
 
-CMD [ "python", "index.py" ]
+CMD [ "python", "main.py" ]
 

@@ -1,41 +1,61 @@
 from flask import render_template
 from flask_login import login_required, current_user
-from web import create_app
+from threading import Thread
+from webapp import create_app
+from webapp.database import get_planta
+import plotly.utils
+import numpy as np
+import pandas as pd
+from threading import Thread
+import matplotlib.pyplot as plt
+import time
+import json
+import os
 
-path = '../database/mediciones.csv'
-dbusers = '../database/users.csv'
-varHumedad = [0.0,0.0, 0.0]
-varTemperatura = [0.0,0.0,0.0]
-varHumedadSuelo = [0.0,0.0,0.0]
-agua = [0,0,0]
-humedadMinima = [0,0,0]
-tiempoRegado = [0,0,0]
+# path = '../database/mediciones.csv'
+# dbusers = '../database/users.csv'
+varHumedad = 0.0
+varTemperatura = 0.0 
+varHumedadSuelo = 0.0
+varPh = 0
+agua = 0
+humedadMinima = 0
+tiempoRegado = 0
 numPlanta = 0
 listoThread = [Thread(),Thread(), Thread()]
-
 
 app = create_app()
 
 def inicializarSensores(planta):
     global varHumedadSuelo, varHumedad, varTemperatura, agua, humedadMinima, tiempoRegado, numPlanta
-    numPlanta = planta
-    data = pd.read_csv(path)
-    fila = data[data['Place']== numPlanta].iloc[-1]
-    varHumedadSuelo[numPlanta] = np.round(float(fila[3]), 2)
-    humedadMinima[numPlanta] = 4.0
-    tiempoRegado[numPlanta] = 25
-    varHumedad[numPlanta] = np.round(float(fila[4]),2)
-    varTemperatura[numPlanta] = np.round(float(fila[5]),2)
-    agua[numPlanta] = int(fila[6])
+    numPlanta = int(planta)
+    data = get_planta(numPlanta)
     print("Se cargo los datos")
+    print(data)
+    varHumedad = data.loc[0,'humedad']
+    varTemperatura = data.loc[0,'temperatura']
+    varHumedadSuelo = data.loc[0,'humedadSuelo']
+    agua = data.loc[0,'agua']
+    humedadMinima = 50
+    tiempoRegado = 2
+    varPh = data.loc[0,['ph']]
+    # varHumedadSuelo[numPlanta] = np.round(float(data[1]), 1)
+    # humedadMinima[numPlanta] = 4.0
+    # tiempoRegado[numPlanta] = 25
+    # varHumedad[numPlanta] = np.round(float(data[2]),1)
+    # varTemperatura[numPlanta] = np.round(float(data[3]),1)
+    # varPh[numPlanta] = int(data[4])
+    # agua[numPlanta] = int(data[5])
+    
     context = {
-        "varHumedad" : varHumedad[numPlanta],
-        "varTemperatura" : varTemperatura[numPlanta],
-        "varHumedadSuelo" : varHumedadSuelo[numPlanta],
-        "agua" : agua[numPlanta],
-        'humedadMinima' : humedadMinima[numPlanta],
-        'tiempoRegado' : tiempoRegado[numPlanta],
-        'numPlanta': numPlanta
+        "varHumedad" : varHumedad,
+        "varTemperatura" : varTemperatura,
+        "varHumedadSuelo" : varHumedadSuelo,
+        "agua" : agua,
+        "humedadMinima" : humedadMinima,
+        "tiempoRegado" : tiempoRegado,
+        "ph": varPh,
+        "numPlanta": numPlanta
     }
     return context
 
@@ -43,16 +63,13 @@ def inicializarSensores(planta):
 @app.route('/')
 def index():
     return render_template('main.html')
-    
-@app.route('/user', methods = ['GET', 'POST'])
-@login_required
-def user():
-    username = current_user.id
-    context = {
-        'username' : username
-    }
-    return render_template('user.html', **context)
 
+@app.route('/inicio/<parametro>',methods=['GET'])
+@login_required
+def main(parametro):
+    print(parametro)
+    return render_template('inicio.html', parametro = parametro)
+    
 @app.route('/graficar/<parametro>',methods=['GET'])
 @login_required
 def graficar(parametro):
@@ -93,10 +110,9 @@ def historial():
 @app.route('/sensor/<planta>',methods=['GET'])
 @login_required
 def sensor(planta):
-    #print(planta)
     datos = inicializarSensores(int(planta))
     print(datos)
-    return render_template('sensor{}.html'.format(planta), datos = datos)
+    return render_template("index.html", datos = datos)
 
 @app.errorhandler(404)
 def pagenotfound(error):
@@ -109,5 +125,5 @@ def pagenotfound(error):
 
 if __name__ == '__main__':
     app.register_error_handler(404, pagenotfound)
-    #app.run(host="172.19.0.3",port=5010,debug=True)
-    app.run(port= 8000, debug= True)
+    app.run(host="172.19.0.3",port=5010,debug=True)
+    #app.run(port= 5010, debug= True)
