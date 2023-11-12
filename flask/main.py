@@ -1,8 +1,8 @@
-from flask import render_template
+from flask import render_template, make_response
 from flask_login import login_required, current_user
 from threading import Thread
 from webapp import create_app
-from webapp.database import get_planta
+from webapp.database import get_planta, get_fecha
 import plotly.utils
 import numpy as np
 import pandas as pd
@@ -38,7 +38,7 @@ def inicializarSensores(planta):
     agua = data.loc[0,'agua']
     humedadMinima = 50
     tiempoRegado = 2
-    varPh = data.loc[0,['ph']]
+    varPh = data.loc[0,'ph']
     # varHumedadSuelo[numPlanta] = np.round(float(data[1]), 1)
     # humedadMinima[numPlanta] = 4.0
     # tiempoRegado[numPlanta] = 25
@@ -54,7 +54,7 @@ def inicializarSensores(planta):
         "agua" : agua,
         "humedadMinima" : humedadMinima,
         "tiempoRegado" : tiempoRegado,
-        "ph": varPh,
+        "varPh": varPh,
         "numPlanta": numPlanta
     }
     return context
@@ -67,8 +67,10 @@ def index():
 @app.route('/inicio/<parametro>',methods=['GET'])
 @login_required
 def main(parametro):
-    print(parametro)
-    return render_template('inicio.html', parametro = parametro)
+    #print(parametro)
+    resp= make_response(render_template('inicio.html', parametro = parametro))
+    resp.set_cookie('usuario', parametro)
+    return resp
     
 @app.route('/graficar/<parametro>',methods=['GET'])
 @login_required
@@ -98,9 +100,13 @@ def enviarData(parametro):
 @app.route('/historial')
 @login_required
 def historial():
-    dataFrame = pd.read_csv(path)
-    fechaArray = dataFrame.loc[:,'Fecha'].drop_duplicates().to_numpy()
+    global numPlanta
+    #dataFrame = pd.read_csv(path)
+    dataFrame = get_fecha(numPlanta)
+    print(dataFrame)
+    fechaArray = dataFrame.loc[:,'fecha'].drop_duplicates().to_numpy()
     lenFecha = len(fechaArray)
+
     content = {
         'fechaArray' : fechaArray,
         'lenFecha' : lenFecha

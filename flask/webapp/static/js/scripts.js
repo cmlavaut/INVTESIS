@@ -13,5 +13,6 @@ function historial(){
   window.location.href = "/historial";
 }
 function regresar(){
-  window.location.href = "/inicio";
+  //var id = document.cookie tengo que leer una cookie que es el id del usuario para volver a regresar  
+  window.location.href = "/inicio/";
 }

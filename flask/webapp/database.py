@@ -80,7 +80,26 @@ def get_planta(id):
 
 
 
-
+def get_fecha(id):
+    with open ('./webapp/bd/select_medicion.sql', 'r') as sql:
+        comando_sql = sql.read()
+        cursor = db.cursor()
+        try:
+            cursor.execute(comando_sql.format(str(id)))
+            consulta = cursor.fetchall()[0]
+            fecha = {
+                'fecha': [consulta[0]],
+                'hora': [consulta[1]]
+            }
+            resultado = pd.DataFrame(fecha)
+            cursor.close()
+        except:
+            fecha = {
+                'fecha' : [],
+                'hora': []
+            }
+            resultado = pd.DataFrame(fecha)
+        return resultado 
     
 
 
