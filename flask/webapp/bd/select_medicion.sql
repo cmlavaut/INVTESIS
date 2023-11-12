@@ -1,1 +1,0 @@
-SELECT `medicion_fecha`, `medicion_hora`  FROM `end_device` WHERE id = "{}";

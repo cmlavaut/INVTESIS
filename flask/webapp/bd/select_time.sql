@@ -1,0 +1,1 @@
+SELECT `medicion_fecha`, `medicion_hora`  FROM `end_device` WHERE esp_serial = "esp{}";

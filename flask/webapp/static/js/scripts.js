@@ -12,7 +12,30 @@ function enviarDatos(){
 function historial(){
   window.location.href = "/historial";
 }
+
+function getCookie(cookieName) {
+    var cookies = document.cookie.split(';');
+
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i].trim();
+
+      if (cookie.indexOf(cookieName + '=') === 0) {
+            // Devuelve el valor de la cookie
+            return cookie.substring(cookieName.length + 1);
+      }
+    }
+
+    // Devuelve null si la cookie no se encuentra
+    return null;
+}
+
 function regresar(){
-  //var id = document.cookie tengo que leer una cookie que es el id del usuario para volver a regresar  
-  window.location.href = "/inicio/";
+  var id = getCookie('usuario')
+  if (id){
+    console.log("valor" + id);
+  } else {
+    console.log("no hay cookie con ese nombre")
+  } 
+
+  window.location.href = "/inicio/"+ id.toString();
 }

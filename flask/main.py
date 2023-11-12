@@ -77,6 +77,7 @@ def main(parametro):
 def graficar(parametro):
     global numPlanta
     datosGraficar = parametro.split(',')
+    print(datosGraficar)
     generarGrafico = 'python3 graficar.py "{}" "{}" "{}"'.format(numPlanta, datosGraficar[1],datosGraficar[0])
     print(generarGrafico)
     os.system(generarGrafico)
@@ -101,10 +102,9 @@ def enviarData(parametro):
 @login_required
 def historial():
     global numPlanta
-    #dataFrame = pd.read_csv(path)
-    dataFrame = get_fecha(numPlanta)
-    print(dataFrame)
-    fechaArray = dataFrame.loc[:,'fecha'].drop_duplicates().to_numpy()
+    tabla = get_fecha(numPlanta)
+    print(tabla)
+    fechaArray = tabla.loc[:,'fecha'].drop_duplicates().to_numpy()
     lenFecha = len(fechaArray)
 
     content = {
