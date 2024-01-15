@@ -8,12 +8,13 @@ import json
 from threading import Thread
 
 path = '/home/database/mediciones.csv'
+path_actuadores = '/home/database/actuadores.csv'
 now = datetime.now()
 fecha = now.strftime("%d %m %y")
 hora = now.strftime("%H:%M:%S")
 conexion= serial.Serial()
 
-def guardar(valorA,tabla):
+def guardar(valorA,tabla,path):
         now = datetime.now()
         now_fecha = now.strftime("%d %m %y")
         now_hora = now.strftime("%H:%M:%S")
@@ -38,19 +39,31 @@ def main():
         dicc = {
             "Place" : [],
             "humedad_suelo" : [],
-            "humedad_deseada" : [],
-            "tiempo_regado" : [],
             "humedad_amb" : [],
             "temperatura" :[],
             "status_agua" : [],
+            "humedad_deseada" : [],
+            "tiempo_regado" : [],
         }
         tabla = pd.DataFrame.from_dict(dicc)
         tabla.to_csv(path,index= False)
+    try:
+        actuadores = pd.read_csv(path_actuadores)
+    except:
+        dicc = {
+            "Place" : [],
+            "humedad_suelo" : [],
+            "humedad_deseada" : [],
+            "tiempo_regado" : [],
+            "status_agua" : [],
+        }
+        actuadores = pd.DataFrame.from_dict(dicc)
+        actuadores.to_csv(path_actuadores,index= False)
     #Comunciacion Serial
     try:
         puerto = '/dev/ttyUSB0'
         conexion.port = puerto
-        conexion.baudrate = 115200
+        conexion.baudrate = 9600
         conexion.open()
     except:
         print("nothing conected")
@@ -62,8 +75,11 @@ def main():
     value= sensor.split()
     print(value)
     if (len(value)==7):
-        print("valores correctos")
-        guardar(value,tabla)
+        print("valores correctos y motor off")
+        guardar(value,tabla,path)
+    elif (len(value==5)):
+        print("valores correctos y motor on")
+        guardar(value,actuadores,path_actuadores)
     else:
         print("valores incorrectos")
         conexion.close()
