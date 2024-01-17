@@ -2,75 +2,100 @@ import serial
 import time
 import sys
 import os
+from xbee import ZigBee
 import pandas as pd
 from datetime import datetime
-import mysql.connector
-from threading import Thread
 
-arduino = serial.Serial()
-db = mysql.connector.connect(
-    host="172.19.0.6",
-    user="cmlavaut",
-    password="cmlavaut96*",
-    database="invernadero"
-)
-print("Inicio...")
+path = '/home/database/mediciones.csv'
+path_actuadores = '/home/database/actuadores.csv'
+now = datetime.now()
+fecha = now.strftime("%d %m %y")
+hora = now.strftime("%H:%M:%S")
 
-
-def guardar(valorA):
+def guardar(valorA,tabla,path):
         now = datetime.now()
-        now_fecha = now.strftime("%y %m %d")
+        now_fecha = now.strftime("%d %m %y")
         now_hora = now.strftime("%H:%M:%S")
-        esp_serial = "esp"+ str(value[0])
-        humedadSuelo = value[1]
-        humedad = value[2]
-        temperatura = value[3]
-        ph = value[4]
-        agua = value[5]
-        with open ('./database/insertar.sql', 'r') as sql:
-            comando_sql = sql.read()
-            cursor = db.cursor()
-            dispositivo = (esp_serial, humedadSuelo, humedad, temperatura, ph, agua, now_fecha, now_hora, "1")
-            cursor.execute(comando_sql,dispositivo)
-            db.commit()
-            cursor.close()
-        print("valores guardados en base de datos")
+        try:
+            tabla.insert(0, "Fecha", now_fecha)
+            tabla.insert(1, "Hora", now_hora)
+        except:
+            #print("ya existe columnas de hora y fecha")
+            pass            
+        datos = [now_fecha, now_hora]
+        datos = datos + valorA
+        tabla.loc[tabla.shape[0]] = datos
+        tabla.to_csv(path, index = False)
+        #print(tabla)
+
 
 
 def main():
+    #Leer datos anteriores
     try:
-        #puerto= /dev/ttyUSB0 buscar bien el puerto del xbee
-        arduino.port= puerto
-        arduino.baudrate = 115200
-        arduino.open()
+        tabla = pd.read_csv(path)
+    except:
+        dicc = {
+            "Place" : [],
+            "humedad_suelo" : [],
+            "humedad_amb" : [],
+            "temperatura" :[],
+            "status_agua" : [],
+            "humedad_deseada" : [],
+            "tiempo_regado" : [],
+        }
+        tabla = pd.DataFrame.from_dict(dicc)
+        tabla.to_csv(path,index= False)
+    try:
+        actuadores = pd.read_csv(path_actuadores)
+    except:
+        dicc = {
+            "Place" : [],
+            "humedad_suelo" : [],
+            "humedad_deseada" : [],
+            "tiempo_regado" : [],
+            "status_agua" : [],
+        }
+        actuadores = pd.DataFrame.from_dict(dicc)
+        actuadores.to_csv(path_actuadores,index= False)
+    
+    #Comunicacion Serial
+
+    try:
+        puerto= '/dev/ttyUSB0' #buscar bien el puerto del xbee
+        BAUD = 9600
+        conexion = serial.Serial(puerto, BAUD)
+        print("xbee conectado")
+        xbee = ZigBee(conexion)
     except:
         print("nothing conected")
         os._exit(0)
     
-    arduino.flushInput()
-    sensor = arduino.readline()
-    sensor = sensor.decode()
-    value= sensor.split()
-    print(value)
-    #if (len(value)==6): ver la sentencia bien de los valores
-        print("valores correctos")
-        guardar(value)
-        client.disconnect()
-    else:
-        print("valores incorrectos")
-        arduino.close()
-        main()
     
-    arduino.close()
+    try:
+        sensor = xbee.wait_read_frame()
+        data = sensor['rf_data'].decode('utf-8').split()
+        print(data)
 
-def detener():
-    time.sleep(20)
-    arduino.close()
-    print("cerrando codigo")
-    os._exit(0)
+        if (len(data) ==7):
+            print("valores correctos y motor off")
+            guardar(data,tabla,path)
+        elif (len(data) == 5):
+            print("valores correctos y motor on")
+            guardar(data,actuadores,path_actuadores)
+        else:
+            print("valores incorrectos")
+            conexion.close()
+            main()
 
+           
+    except:
+        print("no recibo nada")
+        conexion.close()
+        main()
+   
+    
+    conexion.close()
 
 if __name__ == "__main__":
-    thread = Thread(target=detener)
-    thread.start()
     main()
