@@ -1,0 +1,5 @@
+Fecha,Hora,Place,humedad_suelo,humedad_amb,temperatura,status_agua,id_servidor,humedad_deseada,tiempo_regado
+23 01 24,19:16:11,3,80,35.1,18.6,1,1,65,3
+23 01 24,19:16:22,3,80,35.1,18.6,1,1,65,3
+23 01 24,19:16:28,1,80,35.1,18.6,1,1,65,3
+23 01 24,19:16:46,00,75,35.1,18.6,1,01,98,3

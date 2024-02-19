@@ -2,12 +2,14 @@ import serial
 import time
 import sys
 import os
-from xbee import ZigBee
 import pandas as pd
 from datetime import datetime
 
-path = '/home/database/mediciones.csv'
-path_actuadores = '/home/database/actuadores.csv'
+#path = '/home/pi/Invernadero/prueba/mediciones.csv'
+#path_actuadores = '/home/pi/Invernadero/prueba/actuadores.csv'
+path = '/home/cmlavaut/Documents/pruebarasp/mediciones.csv'
+path_actuadores = '/home/cmlavaut/Documents/pruebarasp/actuadores.csv'
+
 now = datetime.now()
 fecha = now.strftime("%d %m %y")
 hora = now.strftime("%H:%M:%S")
@@ -27,8 +29,6 @@ def guardar(valorA,tabla,path):
         tabla.loc[tabla.shape[0]] = datos
         tabla.to_csv(path, index = False)
         #print(tabla)
-
-
 
 def main():
     #Leer datos anteriores
@@ -57,47 +57,27 @@ def main():
             "tiempo_regado" : [],
             "status_agua" : [],
             "id_servidor" : [],
+
         }
         actuadores = pd.DataFrame.from_dict(dicc)
         actuadores.to_csv(path_actuadores,index= False)
     
-    #Comunicacion Serial
+    sensor = "00 75 35.1 18.6 1 01 98 3"
+    actuador= "00 50 96 4 0 2" 
+    #data = sensor.split()
+    data = actuador.split()
+    print(data)
 
-    try:
-        puerto= '/dev/ttyUSB1' #buscar bien el puerto del xbee
-        BAUD = 9600
-        conexion = serial.Serial(puerto, BAUD)
-        print("xbee conectado")
-        xbee = ZigBee(conexion)
-    except:
-        print("nothing conected")
-        os._exit(0)
+    if (len(data) == 8):
+        print("valores correctos y motor off")
+        guardar(data,tabla,path)
+    elif (len(data) == 6):
+        print("valores correctos y motor on")
+        guardar(data,actuadores,path_actuadores)
+    else:
+        print("valores incorrectos")
+        
     
-    
-    try:
-        sensor = xbee.wait_read_frame()
-        data = sensor['rf_data'].decode('utf-8').split()
-        print(data)
-
-        if (len(data) ==8):
-            print("valores correctos y motor off")
-            guardar(data,tabla,path)
-        elif (len(data) == 6):
-            print("valores correctos y motor on")
-            guardar(data,actuadores,path_actuadores)
-        else:
-            print("valores incorrectos")
-            conexion.close()
-            main()
-
-           
-    except:
-        print("no recibo nada")
-        conexion.close()
-        main()
-   
-    
-    conexion.close()
 
 if __name__ == "__main__":
     main()

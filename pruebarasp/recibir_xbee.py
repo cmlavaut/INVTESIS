@@ -6,8 +6,8 @@ from xbee import ZigBee
 import pandas as pd
 from datetime import datetime
 
-path = '/home/database/mediciones.csv'
-path_actuadores = '/home/database/actuadores.csv'
+path = '/home/cmlavaut/Documents/pruebarasp/mediciones.csv'
+path_actuadores = '/home/cmlavaut/Documents/pruebarasp/actuadores.csv'
 now = datetime.now()
 fecha = now.strftime("%d %m %y")
 hora = now.strftime("%H:%M:%S")
@@ -41,7 +41,6 @@ def main():
             "humedad_amb" : [],
             "temperatura" :[],
             "status_agua" : [],
-            "id_servidor" : [],
             "humedad_deseada" : [],
             "tiempo_regado" : [],
         }
@@ -56,7 +55,6 @@ def main():
             "humedad_deseada" : [],
             "tiempo_regado" : [],
             "status_agua" : [],
-            "id_servidor" : [],
         }
         actuadores = pd.DataFrame.from_dict(dicc)
         actuadores.to_csv(path_actuadores,index= False)
@@ -64,7 +62,7 @@ def main():
     #Comunicacion Serial
 
     try:
-        puerto= '/dev/ttyUSB1' #buscar bien el puerto del xbee
+        puerto= '/dev/ttyUSB0' #buscar bien el puerto del xbee
         BAUD = 9600
         conexion = serial.Serial(puerto, BAUD)
         print("xbee conectado")
@@ -79,10 +77,10 @@ def main():
         data = sensor['rf_data'].decode('utf-8').split()
         print(data)
 
-        if (len(data) ==8):
+        if (len(data) ==7):
             print("valores correctos y motor off")
             guardar(data,tabla,path)
-        elif (len(data) == 6):
+        elif (len(data) == 5):
             print("valores correctos y motor on")
             guardar(data,actuadores,path_actuadores)
         else:
