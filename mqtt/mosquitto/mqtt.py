@@ -9,7 +9,7 @@ from threading import Thread
 
 path = '../database/mediciones.csv'
 broker = '172.19.0.2'
-topic = 'sensores/0'
+topic = 'sensores'
 leercredenciales = open('credenciales.json',mode = 'r')
 credenciales = json.load(leercredenciales)
 user = credenciales['user']
